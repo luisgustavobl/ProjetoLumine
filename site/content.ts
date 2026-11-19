@@ -32,8 +32,8 @@ export const marca = {
 };
 
 export const contato = {
-  // TODO: substituir pelo número real (formato internacional, só dígitos)
-  whatsapp: "5585900000000",
+  // formato internacional, só dígitos
+  whatsapp: "5585998369623",
   // TODO: substituir pelo @ real
   instagram: "luminebeautyclub",
   endereco: "Praia de Iracema, Fortaleza – CE",

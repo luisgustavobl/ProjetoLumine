@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Foto from "@/components/Foto";
 import Icone from "@/components/Icone";
 import Carrossel from "@/components/Carrossel";
+import FormContato from "@/components/FormContato";
 import { contato, marca, profissionais, servicos } from "@/content";
 
 const linkWhatsapp = `https://wa.me/${contato.whatsapp}?text=${encodeURIComponent(
@@ -115,17 +116,18 @@ export default function Home() {
                   @{contato.instagram}
                 </a>
               </p>
-              <a className="botao" href={linkWhatsapp} target="_blank" rel="noopener noreferrer">
+              <a className="botao botao--contorno" href={linkWhatsapp} target="_blank" rel="noopener noreferrer">
                 Chamar no WhatsApp
               </a>
+              <iframe
+                className="contato-mapa"
+                title="Mapa: Praia de Iracema, Fortaleza"
+                src={`https://www.google.com/maps?q=${encodeURIComponent(contato.endereco)}&output=embed`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
-            <iframe
-              className="contato-mapa"
-              title="Mapa: Praia de Iracema, Fortaleza"
-              src={`https://www.google.com/maps?q=${encodeURIComponent(contato.endereco)}&output=embed`}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            <FormContato servicos={servicos.map((s) => s.nome)} />
           </div>
         </section>
       </main>
