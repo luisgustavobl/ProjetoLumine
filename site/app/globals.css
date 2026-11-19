@@ -384,12 +384,29 @@ form.agendar h3 { font-size: 1.45rem; }
   margin: 0; padding: 0.7rem 0.9rem; border-left: 3px solid var(--acc); border-radius: 0 10px 10px 0;
   background: var(--areia); font-size: 0.82rem; color: var(--fg-2);
 }
+.campo [aria-invalid="true"] { border-color: var(--erro); }
+.armadilha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.consentimento { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.82rem; color: var(--fg-2); cursor: pointer; }
+.consentimento input { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 0.15rem; accent-color: var(--acc); }
+.consentimento a { color: var(--acc-2); text-underline-offset: 3px; }
+.consentimento:has([aria-invalid="true"]) { color: var(--erro); }
+.botao:disabled { opacity: 0.6; cursor: wait; }
+.codigo { margin: 0.1rem 0 0.6rem; font: 500 1.8rem var(--f-tit); letter-spacing: 0.08em; color: var(--acc-2); }
 .erro { margin: 0; font-size: 0.82rem; color: var(--erro); }
 .erro:empty { display: none; }
 .resumo { padding: 1.1rem; border-radius: 12px; background: var(--areia); font-size: 0.9rem; }
 .resumo pre { white-space: pre-wrap; font: inherit; margin: 0.4rem 0 0.9rem; }
 .resumo .acoes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .aviso { font-size: 0.72rem; color: var(--fg-2); text-align: center; margin-top: 1.4rem; }
+
+/* ---------- páginas de texto (aviso de privacidade) ---------- */
+.pagina-texto .wrap { max-width: 720px; padding-block: clamp(2rem, 6vw, 4rem); }
+.pagina-texto h1 { font-size: clamp(2rem, 6vw, 2.6rem); margin-bottom: 0.3rem; }
+.pagina-texto h2 { font-size: 1.3rem; margin: 2rem 0 0.5rem; }
+.pagina-texto p { margin: 0 0 0.8rem; color: var(--fg-2); }
+.pagina-texto strong { color: var(--fg); }
+.pagina-texto a { color: var(--acc-2); text-underline-offset: 3px; }
+.voltar { display: inline-block; margin-bottom: 1.5rem; font-size: 0.85rem; text-decoration: none; }
 
 /* ---------- rodapé ---------- */
 .rodape { background: var(--rodape); color: var(--rodape-fg); text-align: center; font-size: 0.86rem; border-top: 4px solid var(--acc); }

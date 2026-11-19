@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { profissionais, type ItemPreco, type Servico, type TabelaPreco } from "@/content";
-import { atributosFoto, formatarDuracao, formatarPreco, menorPreco, pedirAgendamento } from "@/lib/util";
+import type { ItemPreco, Profissional, Servico, TabelaPreco } from "@/lib/tipos";
+import { formatarDuracao, formatarPreco, menorPreco, pedirAgendamento } from "@/lib/util";
 import Modal from "./Modal";
 
 // Ilustração usada só pelo card de Cursos, que não tem foto.
@@ -16,8 +16,6 @@ const ARTE_CURSO =
       .join("")}<path d="M45 120l160-85" stroke="#5a3b2a" stroke-width="8" stroke-linecap="round"/><path d="M205 35l26-13" stroke="#2b2b2b" stroke-width="12" stroke-linecap="round"/></svg>`
   );
 
-const nomeDe = (id: string) => profissionais.find((p) => p.id === id)?.nome ?? id;
-
 /** Agrupa os itens pela categoria, mantendo a ordem em que aparecem ("" = sem categoria). */
 function agruparPorCategoria(itens: ItemPreco[]): [string, ItemPreco[]][] {
   const grupos = new Map<string, ItemPreco[]>();
@@ -28,11 +26,12 @@ function agruparPorCategoria(itens: ItemPreco[]): [string, ItemPreco[]][] {
   return [...grupos.entries()];
 }
 
-type Props = { servicos: Servico[]; tabelas: TabelaPreco[] };
+type Props = { servicos: Servico[]; tabelas: TabelaPreco[]; profissionais: Profissional[] };
 
 // Cards de serviço; clicar abre a tabela de preços daquele serviço.
-export default function Servicos({ servicos, tabelas }: Props) {
+export default function Servicos({ servicos, tabelas, profissionais }: Props) {
   const [aberto, setAberto] = useState<Servico | null>(null);
+  const nomeDe = (id: string) => profissionais.find((p) => p.id === id)?.nome ?? id;
   const tabelasDe = (s: Servico) => tabelas.filter((t) => t.servicoId === s.id);
   const fechar = () => setAberto(null);
 
@@ -42,8 +41,8 @@ export default function Servicos({ servicos, tabelas }: Props) {
         {servicos.map((s) => (
           <li key={s.id}>
             <button type="button" className="servico" onClick={() => setAberto(s)} aria-label={`${s.nome}: ver preços`}>
-              {s.foto ? (
-                <img {...atributosFoto(s.foto, "(max-width:980px) 62vw, 220px")} alt={s.nome} loading="lazy" decoding="async" />
+              {s.fotoUrl ? (
+                <img src={s.fotoUrl} width={300} height={400} alt={s.nome} loading="lazy" decoding="async" />
               ) : (
                 <img src={ARTE_CURSO} width={300} height={400} alt="Ilustração de paleta de maquiagem" loading="lazy" />
               )}

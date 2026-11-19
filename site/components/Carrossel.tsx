@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Foto } from "@/content";
+import type { Foto } from "@/lib/tipos";
 import { atributosFoto } from "@/lib/util";
 
 type Props = { fotos: Foto[]; titulo: string; aoAbrir: (indice: number) => void };
@@ -64,7 +64,7 @@ export default function Carrossel({ fotos, titulo, aoAbrir }: Props) {
       <div ref={trilho} className="trilho" tabIndex={0} aria-label={`Trabalhos de ${titulo}`} onScroll={atualizar}>
         {fotos.map((f, i) => (
           <button key={f.id} type="button" onClick={() => aoAbrir(i)} aria-label={`Ampliar: ${f.legenda}`} style={{ transitionDelay: `${i * 90}ms` }}>
-            <img {...atributosFoto(f.id, "(max-width:600px) 60vw, (max-width:860px) 37vw, 300px")} alt={f.legenda} loading="lazy" decoding="async" />
+            <img {...atributosFoto(f, "(max-width:600px) 60vw, (max-width:860px) 37vw, 300px")} alt={f.legenda} loading="lazy" decoding="async" />
           </button>
         ))}
       </div>

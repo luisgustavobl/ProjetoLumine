@@ -1,18 +1,19 @@
-import { DIMENSOES, type FotoId, type ItemPreco, type TabelaPreco } from "@/content";
+import type { Foto, ItemPreco, TabelaPreco } from "./tipos";
 
-/** Atributos de <img> responsivos para uma foto de public/img. */
-export function atributosFoto(id: FotoId, sizes: string) {
-  const [width, height] = DIMENSOES[id];
+/**
+ * Atributos de <img> responsivos. Fotos da carga inicial têm duas versões (480/960 px);
+ * fotos enviadas pelo painel têm uma só, então o srcset é omitido.
+ */
+export function atributosFoto(foto: Foto, sizes: string) {
+  const temDuasVersoes = foto.url !== foto.urlGrande;
   return {
-    src: `/img/${id}-480.webp`,
-    srcSet: `/img/${id}-480.webp 480w, /img/${id}-960.webp 960w`,
-    sizes,
-    width,
-    height,
+    src: foto.url,
+    srcSet: temDuasVersoes ? `${foto.url} 480w, ${foto.urlGrande} 960w` : undefined,
+    sizes: temDuasVersoes ? sizes : undefined,
+    width: foto.largura,
+    height: foto.altura,
   };
 }
-
-export const urlFotoGrande = (id: FotoId) => `/img/${id}-960.webp`;
 
 const reais = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
@@ -32,7 +33,10 @@ export function formatarPreco(item: ItemPreco): string {
 
 /** Menor preço entre as tabelas de um serviço (usado no card: "a partir de R$ X"). */
 export function menorPreco(tabelas: TabelaPreco[]): string | null {
-  const valores = tabelas.flatMap((t) => t.itens).filter((i) => i.tipo !== "consulta" && !i.adicional && i.valor != null).map((i) => i.valor!);
+  const valores = tabelas
+    .flatMap((t) => t.itens)
+    .filter((i) => i.tipo !== "consulta" && !i.adicional && i.valor != null)
+    .map((i) => i.valor as number);
   return valores.length ? `a partir de ${reais(Math.min(...valores))}` : null;
 }
 

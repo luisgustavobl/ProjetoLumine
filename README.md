@@ -27,10 +27,16 @@ Um site responsivo que apresente a equipe e os trabalhos, mostre as tabelas de p
 - **Contato:** endereço, mapa, WhatsApp por área e **formulário de pedido de agendamento** que monta a mensagem e abre o WhatsApp.
 - **Tema automático:** *Noir & dourado* no modo escuro e *Pérola* no modo claro, conforme o sistema do visitante.
 
-### Backend e painel das profissionais (em desenvolvimento)
-- Pedidos de agendamento gravados no banco, com status (pendente, confirmado, recusado).
-- Painel `/painel` com login (e-mail/usuário e senha): agenda dos pedidos, bloqueio de horários, tabelas de preço, WhatsApp de cada profissional e fotos do portfólio e da galeria.
-- Proteção contra spam e adequação à LGPD (aviso de privacidade, consentimento e exclusão de dados antigos).
+### Backend (pronto)
+- **Banco PostgreSQL (Supabase)** com profissionais, serviços, tabelas de preço, fotos, pedidos e bloqueios de horário. O site lê o conteúdo do banco e, se ele cair, usa o conteúdo de reserva de `content.ts`.
+- **`POST /api/pedidos`:** valida os dados, confere se o horário está livre, grava o pedido como *pendente* e devolve um código (ex.: `LUM-7KQ2M`). A cliente então continua a conversa no WhatsApp da profissional, já com o código.
+- **`GET /api/horarios`:** horários ocupados de um dia (pedidos confirmados e bloqueios), sem dados pessoais.
+- **Segurança (RLS):** o visitante só lê o conteúdo público. Pedidos só entram pela API e só a equipe logada consegue lê-los.
+- **Anti-spam:** campo-armadilha, tempo mínimo de preenchimento, limite por IP e por telefone.
+- **LGPD:** consentimento obrigatório, [aviso de privacidade](./site/app/privacidade/page.tsx) e exclusão automática diária de pedidos antigos (`pg_cron`).
+
+### Painel das profissionais (em desenvolvimento)
+- `/painel` com login (e-mail/usuário e senha): agenda dos pedidos (confirmar, recusar, responder no WhatsApp), bloqueio de horários, tabelas de preço, WhatsApp de cada profissional, fotos e usuários.
 
 ---
 
@@ -58,6 +64,18 @@ npm run dev
 
 Acesse [http://localhost:3001](http://localhost:3001).
 
+### Banco de dados
+
+1. Crie um projeto no [Supabase](https://supabase.com/) e preencha `site/.env.local`:
+   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` e `SUPABASE_DB_URL` (Connect → Session pooler).
+2. Crie as tabelas e a carga inicial:
+
+```bash
+npm run db:migrar
+```
+
+As migrações ficam em `site/supabase/migrations/`. Rodar de novo é seguro: a carga inicial só acontece com o banco vazio.
+
 ### Estrutura
 
 ```
@@ -66,9 +84,19 @@ site/
 │   ├── layout.tsx        # fontes, metadados e cor do tema
 │   ├── page.tsx          # página única (seções)
 │   └── globals.css       # estilos e tokens Noir/Pérola
+├── app/api/              # pedidos (POST) e horarios (GET)
+├── app/privacidade/      # aviso de privacidade (LGPD)
 ├── components/           # Navbar, Servicos (tabela de preços), Profissionais, Carrossel,
 │                         # Galeria, Lightbox, Depoimentos, Agendamento, Modal, Logo
-├── lib/util.ts           # imagens responsivas, formatação de preços, link do WhatsApp
+├── lib/
+│   ├── dados.ts          # lê o conteúdo do banco (com reserva estática)
+│   ├── agenda.ts         # regras de horário, compartilhadas por formulário e API
+│   ├── validacao.ts      # validação do pedido
+│   ├── ocupacoes.ts      # horários ocupados no banco
+│   ├── supabase.ts       # clientes do banco (só no servidor)
+│   └── util.ts           # imagens, preços, link do WhatsApp
+├── scripts/migrar.ts     # aplica migrações e carga inicial
+├── supabase/migrations/  # estrutura do banco (SQL)
 ├── content.ts            # conteúdo inicial: profissionais, serviços, preços, fotos
 └── public/img/           # fotos em WebP (480 e 960 px)
 ```

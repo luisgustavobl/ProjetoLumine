@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Foto } from "@/content";
-import { urlFotoGrande } from "@/lib/util";
+import type { Foto } from "@/lib/tipos";
 import Modal from "./Modal";
 
 type Props = { fotos: Foto[]; inicio: number | null; aoFechar: () => void };
@@ -32,7 +31,7 @@ export default function Lightbox({ fotos, inicio, aoFechar }: Props) {
   useEffect(() => {
     if (inicio === null || !fotos.length) return;
     [i + 1, i - 1].forEach((k) => {
-      new Image().src = urlFotoGrande(fotos[(k + fotos.length) % fotos.length].id);
+      new Image().src = fotos[(k + fotos.length) % fotos.length].urlGrande;
     });
   }, [i, inicio, fotos]);
 
@@ -52,7 +51,7 @@ export default function Lightbox({ fotos, inicio, aoFechar }: Props) {
           <button className="x" type="button" onClick={aoFechar} aria-label="Fechar">×</button>
           <button className="p" type="button" onClick={() => passo(-1)} aria-label="Foto anterior">‹</button>
           <figure>
-            <img src={urlFotoGrande(foto.id)} alt={foto.legenda} />
+            <img src={foto.urlGrande} alt={foto.legenda} />
             <figcaption>
               {foto.legenda} · {i + 1} de {fotos.length}
             </figcaption>

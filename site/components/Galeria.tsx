@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Foto } from "@/content";
+import type { FotoGaleria } from "@/lib/tipos";
 import { atributosFoto } from "@/lib/util";
 import Lightbox from "./Lightbox";
 
-export type FotoGaleria = Foto & { categoria: string };
 type Filtro = { id: string; rotulo: string; categorias: string[] | null };
 
 const FILTROS: Filtro[] = [
@@ -67,7 +66,7 @@ export default function Galeria({ fotos }: { fotos: FotoGaleria[] }) {
         <div className="galeria" ref={grade}>
           {lista.map((f, i) => (
             <button key={f.id} type="button" onClick={() => setAberta(i)} aria-label={`Ampliar: ${f.legenda}`}>
-              <img {...atributosFoto(f.id, "(max-width:600px) 48vw, 280px")} alt={f.legenda} loading="lazy" decoding="async" onLoad={() => expandida && ajustar()} />
+              <img {...atributosFoto(f, "(max-width:600px) 48vw, 280px")} alt={f.legenda} loading="lazy" decoding="async" onLoad={() => expandida && ajustar()} />
             </button>
           ))}
         </div>

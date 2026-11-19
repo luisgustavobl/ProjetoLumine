@@ -85,7 +85,7 @@ create index if not exists fotos_profissional_idx on fotos (profissional_id, ord
 
 create table if not exists pedidos (
   id                uuid primary key default gen_random_uuid(),
-  codigo            text not null unique,         -- código curto mostrado à cliente, ex.: LUM-4F7K
+  codigo            text not null unique,         -- código curto mostrado à cliente, ex.: LUM-7KQ2M
   nome              text not null check (char_length(nome) between 2 and 80),
   telefone          text not null check (char_length(telefone) between 10 and 15), -- só dígitos
   servico_id        text not null references servicos(id),
