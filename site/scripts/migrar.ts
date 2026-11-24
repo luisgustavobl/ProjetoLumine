@@ -110,6 +110,8 @@ async function main() {
   if (!url) throw new Error("SUPABASE_DB_URL não está definido em .env.local");
 
   const db = new Client({ connectionString: url, ssl: { rejectUnauthorized: false } });
+  // Queda de conexão (ex.: banco reiniciando) vira erro tratado em vez de derrubar o Node.
+  db.on("error", (erro) => console.error("Conexão com o banco caiu:", erro.message));
   await db.connect();
   try {
     await db.query("begin");

@@ -3,6 +3,7 @@ import { horarioOcupado } from "@/lib/agenda";
 import { buscarOcupacoes, candidatasDoServico } from "@/lib/ocupacoes";
 import { clienteAdmin } from "@/lib/supabase";
 import { validarPedido } from "@/lib/validacao";
+import { AGENDAMENTO_ONLINE } from "@/lib/recursos";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,7 @@ const falha = (erro: string, status: number, campo?: string) => Response.json({ 
  * Responde com o código do pedido e o WhatsApp para a cliente continuar a conversa.
  */
 export async function POST(req: Request) {
+  if (!AGENDAMENTO_ONLINE) return Response.json({ erro: "Agendamento online desativado." }, { status: 404 });
   let corpo: Record<string, unknown>;
   try {
     corpo = await req.json();

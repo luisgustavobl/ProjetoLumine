@@ -53,15 +53,14 @@ export default function Depoimentos() {
         ))}
       </div>
       <div className="dep-rodape">
-        <div className="dep-esq">
-          <div className="dep-pontos" aria-hidden="true">
-            {depoimentos.map((_, i) => (
-              <i key={i} className={i === estado.atual ? "on" : undefined} />
-            ))}
-          </div>
-          <a className="google-nota" href={contato.googleMaps} target="_blank" rel="noopener noreferrer">
-            <b>{contato.notaGoogle}</b> <span aria-hidden="true">★★★★★</span> {contato.avaliacoesGoogle} avaliações no Google ↗
-          </a>
+        <a className="google-nota" href={contato.googleMaps} target="_blank" rel="noopener noreferrer">
+          <b>{contato.notaGoogle}</b> <span aria-hidden="true">★★★★★</span> {contato.avaliacoesGoogle} avaliações no Google ↗
+        </a>
+        {/* Indicador de página, centralizado entre a nota e as setas. */}
+        <div className="dep-pontos" aria-hidden="true">
+          {depoimentos.map((_, i) => (
+            <i key={i} className={i === estado.atual ? "on" : undefined} />
+          ))}
         </div>
         <div className="dep-ctrl">
           <button type="button" aria-label="Depoimentos anteriores" disabled={!estado.voltar} onClick={() => rolar(-1)}>‹</button>

@@ -1,5 +1,6 @@
 import { dataValida, horasOcupadas } from "@/lib/agenda";
 import { buscarOcupacoes, candidatasDoServico } from "@/lib/ocupacoes";
+import { AGENDAMENTO_ONLINE } from "@/lib/recursos";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
  * Responde quais horários do dia estão ocupados para esse serviço/profissional.
  */
 export async function GET(req: Request) {
+  if (!AGENDAMENTO_ONLINE) return Response.json({ erro: "Agendamento online desativado." }, { status: 404 });
   const params = new URL(req.url).searchParams;
   const data = params.get("data") ?? "";
   const servico = params.get("servico") ?? "";

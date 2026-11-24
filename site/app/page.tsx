@@ -5,6 +5,8 @@ import Profissionais from "@/components/Profissionais";
 import Galeria from "@/components/Galeria";
 import Depoimentos from "@/components/Depoimentos";
 import Agendamento from "@/components/Agendamento";
+import AgendamentoOnline from "@/components/AgendamentoOnline";
+import { AGENDAMENTO_ONLINE } from "@/lib/recursos";
 import { contato } from "@/content";
 import { carregarSite } from "@/lib/dados";
 import { atributosFoto } from "@/lib/util";
@@ -140,7 +142,11 @@ export default async function Home() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-              <Agendamento servicos={servicos} profissionais={profissionais} />
+              {AGENDAMENTO_ONLINE ? (
+                <AgendamentoOnline servicos={servicos} profissionais={profissionais} />
+              ) : (
+                <Agendamento servicos={servicos} profissionais={profissionais} />
+              )}
             </div>
             <p className="aviso">Depoimentos e nota vêm do Google.</p>
           </div>

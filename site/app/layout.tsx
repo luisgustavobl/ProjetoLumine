@@ -22,9 +22,10 @@ export const viewport: Viewport = {
   ],
 };
 
+// suppressHydrationWarning no <html>: o painel aplica data-tema (tema escolhido) antes do React carregar.
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${playfair.variable} ${montserrat.variable}`}>
+    <html lang="pt-BR" className={`${playfair.variable} ${montserrat.variable}`} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
