@@ -3,6 +3,8 @@
  *
  *   npm run usuarios -- listar
  *   npm run usuarios -- criar <usuario> "<Nome>" [profissional]   (pede a senha)
+ *   npm run usuarios -- master <usuario> "<Nome>"                  (conta master; pede a senha)
+ *   npm run usuarios -- promover <usuario>                         (torna uma conta existente master)
  *   npm run usuarios -- senha <usuario>                            (pede a nova senha)
  *   npm run usuarios -- remover <usuario>
  *
@@ -59,14 +61,16 @@ async function idDoUsuario(usuario: string): Promise<string> {
 }
 
 async function listar() {
-  const { data, error } = await clienteAdmin().from("equipe").select("usuario, nome, profissional_id, criado_em").order("criado_em");
+  const { data, error } = await clienteAdmin().from("equipe").select("usuario, nome, profissional_id, admin, criado_em").order("criado_em");
   if (error) throw new Error(error.message);
   if (!data.length) return console.log("Nenhuma conta ainda.");
-  console.table(data.map((m) => ({ usuario: m.usuario, nome: m.nome, profissional: m.profissional_id ?? "—" })));
+  console.table(data.map((m) => ({ usuario: m.usuario, nome: m.nome, profissional: m.profissional_id ?? "—", master: m.admin ? "sim" : "" })));
 }
 
-async function criar(usuario: string, nome: string, profissional?: string) {
-  if (!usuario || !nome) throw new Error('Uso: npm run usuarios -- criar <usuario> "<Nome>" [profissional]');
+async function criar(usuario: string, nome: string, profissional?: string, master = false) {
+  if (!usuario || !nome) {
+    throw new Error(master ? 'Uso: npm run usuarios -- master <usuario> "<Nome>"' : 'Uso: npm run usuarios -- criar <usuario> "<Nome>" [profissional]');
+  }
   usuario = usuario.toLowerCase();
   const senha = await pedirSenhaNova();
   const problema = problemaNasCredenciais(usuario, senha);
@@ -75,12 +79,12 @@ async function criar(usuario: string, nome: string, profissional?: string) {
   const admin = clienteAdmin();
   const { data, error } = await admin.auth.admin.createUser({ email: loginParaEmail(usuario), password: senha, email_confirm: true });
   if (error) throw new Error(`Não foi possível criar a conta: ${error.message}`);
-  const r = await admin.from("equipe").insert({ user_id: data.user.id, nome, usuario, profissional_id: profissional ?? null });
+  const r = await admin.from("equipe").insert({ user_id: data.user.id, nome, usuario, profissional_id: profissional ?? null, admin: master });
   if (r.error) {
     await admin.auth.admin.deleteUser(data.user.id); // desfaz para não deixar conta órfã
     throw new Error(`Não foi possível registrar na equipe: ${r.error.message}`);
   }
-  console.log(`✓ Conta criada. Entrar em /painel com o usuário "${usuario}" e a senha definida.`);
+  console.log(`✓ Conta${master ? " master" : ""} criada. Entrar em /painel com o usuário "${usuario}" e a senha definida.`);
 }
 
 async function trocarSenha(usuario: string) {
@@ -94,6 +98,13 @@ async function trocarSenha(usuario: string) {
   console.log(`✓ Senha de "${usuario}" alterada.`);
 }
 
+async function promover(usuario: string) {
+  if (!usuario) throw new Error("Uso: npm run usuarios -- promover <usuario>");
+  const { error } = await clienteAdmin().from("equipe").update({ admin: true }).eq("user_id", await idDoUsuario(usuario));
+  if (error) throw new Error(error.message);
+  console.log(`✓ "${usuario}" agora é master.`);
+}
+
 async function remover(usuario: string) {
   if (!usuario) throw new Error("Uso: npm run usuarios -- remover <usuario>");
   const { error } = await clienteAdmin().auth.admin.deleteUser(await idDoUsuario(usuario)); // apaga da equipe junto (cascade)
@@ -105,11 +116,13 @@ const [comando, ...args] = process.argv.slice(2);
 const comandos: Record<string, () => Promise<void>> = {
   listar,
   criar: () => criar(args[0], args[1], args[2]),
+  master: () => criar(args[0], args[1], undefined, true),
+  promover: () => promover(args[0]),
   senha: () => trocarSenha(args[0]),
   remover: () => remover(args[0]),
 };
 
-(comandos[comando] ?? (async () => console.log("Comandos: listar | criar <usuario> \"<Nome>\" [profissional] | senha <usuario> | remover <usuario>")))()
+(comandos[comando] ?? (async () => console.log("Comandos: listar | criar <usuario> \"<Nome>\" [profissional] | master <usuario> \"<Nome>\" | promover <usuario> | senha <usuario> | remover <usuario>")))()
   .catch((erro: Error) => {
     console.error("✗", erro.message);
     process.exit(1);
