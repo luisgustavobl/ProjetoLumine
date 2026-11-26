@@ -4,7 +4,7 @@ Plataforma web do **Luminé Beauty Club**, espaço de beleza da maquiadora e edu
 
 Projeto de extensão da disciplina de Desenvolvimento de Plataformas Web.
 
-**Site no ar:** https://luminebeauty.vercel.app/
+**Site lançado:** https://luminebeauty.vercel.app/
 
 ---
 
